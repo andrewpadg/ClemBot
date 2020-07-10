@@ -1,8 +1,6 @@
-import asyncio
+import weakref as wr
 from inspect import ismethod
 from typing import Callable, Union
-
-import weakref as wr
 
 """This is the global message bus that handles all application level events"""
 
@@ -13,7 +11,7 @@ WeakObjOrMethod = Union[wr.WeakMethod, wr.ref]
 DeadRefObserver = Callable[[WeakObjOrMethod], None]
 
 async def publish(event: str, *args) -> None:
-    """publishes an event onto the global message queue with accompanying arguements  """
+    """publishes an event onto the global message queue with accompanying arguements"""
     if event in events.keys():
         for sub in events[event]:
             await sub()(*args)
@@ -38,4 +36,3 @@ def getWeakRef(obj, notifyDead: DeadRefObserver = None):
     else:
         createRef = wr.ref
     return createRef(obj)
-

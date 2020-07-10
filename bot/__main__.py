@@ -1,8 +1,7 @@
 import logging
-import sys
 import os
-
-import discord
+import sys
+from datetime import datetime
 
 from bot.bot_secrets import BotSecrets
 from bot.clem_bot import ClemBot as ClemBot
@@ -21,16 +20,18 @@ def main():
     if not os.path.exists('Logs'):
         os.makedirs('Logs')
     #sets up the logging for discord.py
-    logger = logging.getLogger('discord')
-    logger.setLevel(logging.DEBUG)
-    handler = logging.FileHandler(filename='Logs/discord.log', encoding='utf-8', mode='w')
+    disc_log = logging.getLogger('discord')
+    disc_log.setLevel(logging.DEBUG)
+    disc_log_name = f'Logs/{datetime.now().strftime("%Y-%m-%d-%H:%M:%S")}_discord.log'
+    handler = logging.FileHandler(filename= disc_log_name, encoding='utf-8', mode='w')
     handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
-    logger.addHandler(handler)
-    
+    disc_log.addHandler(handler)
+
     #creates the logger for the Bot Itself
     setup_logger()
     bot_log = logging.getLogger('bot')
-    bot_file_handle = logging.FileHandler('Logs/bot.log', encoding='utf-8', mode='w')
+    bot_log_name = f'Logs/{datetime.now().strftime("%Y-%m-%d-%H:%M:%S")}_bot.log'
+    bot_file_handle = logging.FileHandler(filename= bot_log_name, encoding='utf-8', mode='w')
     bot_file_handle.setFormatter(logging.Formatter('%(asctime)s %(levelname)s %(message)s'))
     bot_log.addHandler(bot_file_handle)
 
@@ -51,12 +52,10 @@ def main():
 
     if token is not None:
         BotSecrets.get_instance().bot_token = token
-
+    
     bot_log.info('Bot Starting Up')
-    ClemBot(command_prefix = '$').run(BotSecrets.get_instance().bot_token)
+    ClemBot(command_prefix = '$', max_messages= 5000).run(BotSecrets.get_instance().bot_token)
 
 
 if __name__ == "__main__":
     main()
-
-
